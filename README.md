@@ -8,15 +8,15 @@ Machine learning project where we explore the application of reinforcement learn
 These instructions will get you a copy of the project up and running on your local machine for testing purposes.
 
 
-### Prerequisites
+## Prerequisites
 
 In order to successfully compile and run the code, [Python 3.x](https://www.python.org), [Gym](https://gym.openai.com/) and 
 [box2d-py](https://pypi.org/project/box2d-py/) should be installed. 
 
 
-### Installing dependencies
+## Installing dependencies
 
-#### Windows
+### Windows
 
 [TODO]: # (TODO: See if this is even possible without Visual Studio)
 
@@ -25,9 +25,9 @@ solution outside of Visual Studio and Visual Studio Build Tools.
 It is highly recommended to install this on Linux or macOS**
 
 
-#### Linux
+### Linux
 
-##### Debian based distribution
+#### Debian based distribution
 ```bash
 apt-get install build-essential
 apt-get install python3
@@ -37,7 +37,7 @@ pip3 install gym
 pip3 install box2d-py
 ```
 
-##### Arch Linux based distribution
+#### Arch Linux based distribution
 ```bash
 pacman -S base-devel
 pacman -S python
@@ -47,7 +47,7 @@ pip install gym
 pip install box2d-py
 ```
 
-#### macOS
+### macOS
 🚧 **Coming soon** 🚧
 
 [TODO]: # (TODO: Kristian fix this)
