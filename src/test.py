@@ -23,8 +23,9 @@ def key_check():
             env.visualize = True
 
     def on_key_release(key):
-        if key.char == 'v':
-            toggle_vis()
+        if hasattr(key, "char"):
+            if key.char == 'v':
+                toggle_vis()
 
     with keyboard.Listener(on_release=on_key_release) as listener:
         listener.join()
