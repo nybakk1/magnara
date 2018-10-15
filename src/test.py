@@ -1,16 +1,37 @@
  # examples/quickstart.py
 
 import numpy as np
+import threading
 
 from tensorforce.agents import PPOAgent
 from tensorforce.agents.learning_agent import LearningAgent
 from tensorforce.execution import Runner
 from tensorforce.contrib.openai_gym import OpenAIGym
 
+from pynput import keyboard
 
 # Create an OpenAIgym environment
 #CartPole-v0
 env = OpenAIGym('BipedalWalker-v2', visualize=False)
+
+
+def key_check():
+    def toggle_vis():
+        if env.visualize:
+            env.visualize = False
+        else:
+            env.visualize = True
+
+    def on_key_release(key):
+        if key.char == 'v':
+            toggle_vis()
+
+    with keyboard.Listener(on_release=on_key_release) as listener:
+        listener.join()
+
+
+t1 = threading.Thread(target=key_check)
+t1.start()
 
 # Network as list of layers
 network_spec = [
@@ -73,3 +94,4 @@ print("Learning finished. Total episodes: {ep}. Average reward of last 100 episo
     ep=runner.episode,
     ar=np.mean(runner.episode_rewards[-100:]))
 )
+
