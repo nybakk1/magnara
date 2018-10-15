@@ -47,10 +47,11 @@ pip install gym
 pip install box2d-py
 ```
 
-### macOS
-🚧 **Coming soon** 🚧
-
-[TODO]: # (TODO: Kristian fix this)
+### mac OSX
+```bash
+pip3 install gym
+pip3 install box2d-py
+```
 
 ## Authors
 
