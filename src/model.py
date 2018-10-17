@@ -58,23 +58,26 @@ class DeepQAgent():
             self.epsilon *= self.epsilon_decay
 
 
-env = G.make('CartPole-v0')
+env = G.make('CartPole-v1')
 agent = DeepQAgent(env.action_space.n, env.observation_space.shape[0])
 scores = []
 for e in range(episodes):
     state = env.reset()
+
     state = np.reshape(state, [1, env.observation_space.shape[0]])
-    for ts in range(200):
+    for ts in range(500):
+        env.render()
         action = agent.just_do_it(state)
         next_state, reward, done, _ = env.step(action)
-        scores.append(reward)
         next_state = np.reshape(next_state, [1, env.observation_space.shape[0]])
-        agent.never_forget(state, action, reward, done, next_state)
         state = next_state
         if done:
+            scores.append(ts)
+            agent.never_forget(state, action, ts, done, next_state)
             print('Episode {}/{}, score: {}'.format(e, episodes, ts))
             break
     agent.replay(bat_size)
 
-plt.scatter(scores)
+x = [i for i in range(0, episodes)]
+plt.plot(scores)
 plt.show()
