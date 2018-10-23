@@ -8,14 +8,15 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-bat_size = 32
-episodes = 1500
+bat_size = 64
+episodes = 800
+timesteps = 500
 
 class DeepQAgent():
     def __init__(self, action_space, observation_space):
         # hyperparameters
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.99
+        self.gamma = 0.99  # was .95
         self.epsilon = 1.0
         self.epsilon_min = 0.01  # ?
         self.epsilon_decay = 0.995  # ?
@@ -69,8 +70,8 @@ for e in range(episodes):
     state = env.reset()
 
     state = np.reshape(state, [1, env.observation_space.shape[0]])
-    for ts in range(500):
-        #env.render()
+    for ts in range(timesteps):
+        # env.render()
         action = agent.perform_action(state)
         next_state, reward, done, _ = env.step(action)
         reward = reward if not done else -10
@@ -79,11 +80,13 @@ for e in range(episodes):
         state = next_state
         if done:
             scores.append(ts)
-            #agent.never_forget(state, action, ts, done, next_state)
-            print('Episode {}/{}, score: {}'.format(e, episodes, ts))
+            print('Episode {}/{}, score: {}'.format(e+1, episodes, ts))
             break
     agent.train(bat_size)
 
-x = [i for i in range(0, episodes)]
-plt.plot(scores)
+x = [i for i in range(episodes)]
+z = np.polyfit(x, scores, 8)
+f = np.poly1d(z)
+y_new = f(x)
+plt.plot(x,scores,'o',x,y_new)
 plt.show()
