@@ -8,13 +8,14 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-bat_size = 64
-episodes = 800
+bat_size = 32
+episodes = 1500
 
 class DeepQAgent():
     def __init__(self, action_space, observation_space):
+        # hyperparameters
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.95
+        self.gamma = 0.99
         self.epsilon = 1.0
         self.epsilon_min = 0.01  # ?
         self.epsilon_decay = 0.995  # ?
@@ -31,9 +32,11 @@ class DeepQAgent():
         model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
         return model
 
+    # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
         self.memory.append((state, action, reward, done, next_state))
 
+    # bestemmer og utfører den action som velges.
     def perform_action(self, state):
         # TODO: Random Action Probability (Read: RAP)
         if np.random.rand() <= self.epsilon:
@@ -42,9 +45,10 @@ class DeepQAgent():
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])  # This will fuck up, maybe.
 
-    def replay(self, batch_size):
+    # trener opp modellen. Plukker ut en batch med states fra minnet.
+    def train(self, batch_size):
         if len(self.memory) < batch_size:
-            return
+            batch_size = len(self.memory)
 
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, done, next_state in minibatch:
@@ -78,7 +82,7 @@ for e in range(episodes):
             #agent.never_forget(state, action, ts, done, next_state)
             print('Episode {}/{}, score: {}'.format(e, episodes, ts))
             break
-    agent.replay(bat_size)
+    agent.train(bat_size)
 
 x = [i for i in range(0, episodes)]
 plt.plot(scores)
