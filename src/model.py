@@ -27,11 +27,11 @@ class DeepQAgent():
         model = Sequential()
         model.add(Dense(32, input_dim=self.observation_space, activation='relu'))
         model.add(Dense(24, activation='relu'))
-        model.add(Dense(self.action_space, activation='sigmoid'))
+        model.add(Dense(self.action_space, activation='linear'))
         model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
         return model
 
-    def never_forget(self, state, action, reward, done, next_state):
+    def save_state(self, state, action, reward, done, next_state):
         self.memory.append((state, action, reward, done, next_state))
 
     def perform_action(self, state):
@@ -69,11 +69,13 @@ for e in range(episodes):
         #env.render()
         action = agent.perform_action(state)
         next_state, reward, done, _ = env.step(action)
+        reward = reward if not done else -10
         next_state = np.reshape(next_state, [1, env.observation_space.shape[0]])
+        agent.save_state(state,action,reward,done,next_state)
         state = next_state
         if done:
             scores.append(ts)
-            agent.never_forget(state, action, ts, done, next_state)
+            #agent.never_forget(state, action, ts, done, next_state)
             print('Episode {}/{}, score: {}'.format(e, episodes, ts))
             break
     agent.replay(bat_size)
