@@ -8,8 +8,8 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-bat_size = 32
-episodes = 500
+bat_size = 64
+episodes = 800
 
 class DeepQAgent():
     def __init__(self, action_space, observation_space):
@@ -34,7 +34,7 @@ class DeepQAgent():
     def never_forget(self, state, action, reward, done, next_state):
         self.memory.append((state, action, reward, done, next_state))
 
-    def just_do_it(self, state):
+    def perform_action(self, state):
         # TODO: Random Action Probability (Read: RAP)
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
@@ -66,8 +66,8 @@ for e in range(episodes):
 
     state = np.reshape(state, [1, env.observation_space.shape[0]])
     for ts in range(500):
-        env.render()
-        action = agent.just_do_it(state)
+        #env.render()
+        action = agent.perform_action(state)
         next_state, reward, done, _ = env.step(action)
         next_state = np.reshape(next_state, [1, env.observation_space.shape[0]])
         state = next_state
