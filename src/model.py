@@ -1,3 +1,9 @@
+# Force TensorFlow to run on CPU. Comment out these lines
+# if you don't use TensorFlow-GPU
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 from keras.models import Sequential
 from keras.layers import Dense, activations
 from keras.optimizers import Adam
