@@ -81,14 +81,14 @@ class DeepQAgent:
         average_size = 50
         rolling_average = []
         for e in range(episodes):
-            state = self.discretize(self.env.reset())
+            state = self.env.reset()
 
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
                 # env.render()
                 action = agent.perform_action(state)
                 next_state, reward, done, _ = self.env.step(action)
-                next_state = self.discretize(next_state)
+                # next_state = next_state
                 reward = reward if not done else -10
                 next_state = np.reshape(next_state, [1, self.observation_space])
                 # print(state, next_state)
@@ -107,7 +107,7 @@ class DeepQAgent:
         # Plot rolling average
         x = [i+average_size for i in range(len(rolling_average))]
         plt.plot(x, rolling_average)
-        plt.title("Rolling average of past 50 episodes.")
+        plt.title("Rolling average of past " + str(average_size) + " episodes.")
         plt.ylabel("Average score")
         plt.xlabel("Episodes")
         plt.show()
