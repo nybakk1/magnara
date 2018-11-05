@@ -1,10 +1,3 @@
-# Force TensorFlow to run on CPU. Comment out these lines
-# if you don't use TensorFlow-GPU
-import os
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
 from keras.models import Sequential
 from keras.layers import Dense, activations
 from keras.optimizers import Adam
@@ -16,8 +9,14 @@ import math
 import random
 import matplotlib.pyplot as plt
 
+# Force TensorFlow to run on CPU. Comment out these lines
+# if you don't use TensorFlow-GPU
+# import os
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-class DeepQAgent():
+
+class DeepQAgent:
     def __init__(self, env, buckets=(6, 12, 6, 12)):
         # hyperparameters
         self.memory = deque(maxlen=2000)
@@ -79,6 +78,8 @@ class DeepQAgent():
 
     def run(self, episodes=500, timesteps=200, bat_size=32):
         scores = []
+        average_size = 50
+        rolling_average = []
         for e in range(episodes):
             state = self.discretize(self.env.reset())
 
@@ -90,20 +91,25 @@ class DeepQAgent():
                 next_state = self.discretize(next_state)
                 reward = reward if not done else -10
                 next_state = np.reshape(next_state, [1, self.observation_space])
-                print(state, next_state)
+                # print(state, next_state)
                 agent.save_state(state, action, reward, done, next_state)
                 state = next_state
                 if done or ts >= timesteps - 1:
                     scores.append(ts)
-                    print(f'Episode {e+1}/{episodes}, score: {ts}')
+                    if e > average_size:
+                        average = np.average(scores[e-average_size:e])
+                        print(f'Episode {e+1}/{episodes}, average: {average}')
+                        rolling_average.append(average)
+                    # print(f'Episode {e+1}/{episodes}, score: {ts}')
                     break
             agent.train(bat_size)
 
-        x = [i for i in range(episodes)]
-        z = np.polyfit(x, scores, 8)
-        f = np.poly1d(z)
-        y_new = f(x)
-        plt.plot(x, scores, 'o', x, y_new)
+        # Plot rolling average
+        x = [i+average_size for i in range(len(rolling_average))]
+        plt.plot(x, rolling_average, 'o')
+        plt.title("Rolling average of 50 episodes.")
+        plt.ylabel("Average score")
+        plt.xlabel("Episodes")
         plt.show()
 
 
