@@ -106,8 +106,8 @@ class DeepQAgent:
 
         # Plot rolling average
         x = [i+average_size for i in range(len(rolling_average))]
-        plt.plot(x, rolling_average, 'o')
-        plt.title("Rolling average of 50 episodes.")
+        plt.plot(x, rolling_average)
+        plt.title("Rolling average of past 50 episodes.")
         plt.ylabel("Average score")
         plt.xlabel("Episodes")
         plt.show()
