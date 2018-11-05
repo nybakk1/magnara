@@ -11,9 +11,14 @@ import matplotlib.pyplot as plt
 
 # Force TensorFlow to run on CPU. Comment out these lines
 # if you don't use TensorFlow-GPU
-# import os
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+episodes = 500
+max_score = 200
+batch_size = 32
+average_size = 100
 
 
 class DeepQAgent:
@@ -76,9 +81,8 @@ class DeepQAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-    def run(self, episodes=500, timesteps=200, bat_size=32):
+    def run(self, episodes=500, timesteps=200, batch_size=32, average_size=50):
         scores = []
-        average_size = 50
         rolling_average = []
         for e in range(episodes):
             state = self.env.reset()
@@ -102,7 +106,7 @@ class DeepQAgent:
                         rolling_average.append(average)
                     # print(f'Episode {e+1}/{episodes}, score: {ts}')
                     break
-            agent.train(bat_size)
+            agent.train(batch_size)
 
         # Plot rolling average
         x = [i+average_size for i in range(len(rolling_average))]
@@ -115,4 +119,4 @@ class DeepQAgent:
 
 env = G.make('CartPole-v1')
 agent = DeepQAgent(env)
-agent.run()
+agent.run(episodes, max_score, batch_size, average_size)
