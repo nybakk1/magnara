@@ -1,7 +1,8 @@
 # Force TensorFlow to run on CPU. Comment out these lines
 # if you don't use TensorFlow-GPU
 import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 from keras.models import Sequential
@@ -17,12 +18,12 @@ import matplotlib.pyplot as plt
 
 
 class DeepQAgent():
-    def __init__(self, env, buckets=(10, 12, 10, 12)):
+    def __init__(self, env, buckets=(6, 12, 6, 12)):
         # hyperparameters
         self.memory = deque(maxlen=2000)
         self.buckets = buckets
         self.env = env
-        self.gamma = 0.99  # was .95
+        self.gamma = .99  # was .95
         self.epsilon = 1.0
         self.epsilon_min = 0.01  # ?
         self.epsilon_decay = 0.995  # ?
@@ -40,7 +41,12 @@ class DeepQAgent():
         return model
 
     def discretize(self, state):
-        upper = []
+        upper = [self.env.observation_space.high[0], 1.0, self.env.observation_space.high[2], math.radians(41.8)]
+        lower = [self.env.observation_space.low[0], -1.0, self.env.observation_space.low[2], -math.radians(41.8)]
+        ratio = [(state[i] + abs(lower[i])) / (upper[i] - lower[i]) for i in range(len(state))]
+        new_state = [int(round((self.buckets[i] - 1) * ratio[i])) for i in range(len(state))]
+        new_state = [min(self.buckets[i] - 1, max(0, new_state[i])) for i in range(len(state))]
+        return np.asarray(tuple(new_state))
 
     # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
@@ -74,18 +80,20 @@ class DeepQAgent():
     def run(self, episodes=500, timesteps=200, bat_size=32):
         scores = []
         for e in range(episodes):
-            state = env.reset()
+            state = self.discretize(self.env.reset())
 
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
                 # env.render()
                 action = agent.perform_action(state)
                 next_state, reward, done, _ = self.env.step(action)
+                next_state = self.discretize(next_state)
                 reward = reward if not done else -10
                 next_state = np.reshape(next_state, [1, self.observation_space])
+                print(state, next_state)
                 agent.save_state(state, action, reward, done, next_state)
                 state = next_state
-                if done or ts >= timesteps:
+                if done or ts >= timesteps - 1:
                     scores.append(ts)
                     print(f'Episode {e+1}/{episodes}, score: {ts}')
                     break
