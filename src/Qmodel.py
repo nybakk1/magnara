@@ -15,14 +15,15 @@ class Qmodel:
         self.observation_size = env.observation_space.shape[0]
 
         self.bucket = bucket
-        self.Q = self.buildQ()   # Q[state][action] = (1-learning_rate) * Q[state][action] + learning_rate * (reward + discount_factor * max(Q[nextState])
-                                  # Q[state][action] += learning_rate * (-Q[state][action] + reward + discount_factor + max(Q[nextState]))
+        self.Q = self.buildQ()
 
-        self.discount_factor = 0.1     # Increases as episodes go on to weight later actions less.
+        self.discount_factor = 0.1      # Increases as episodes go on to weight later actions less.
+        self.discount_fact_inc = 0.002  # How much discount factor increases.
+        self.discount_fact_max = 1.0    # Maximum limit for discount factor.
         self.epsilon = 1.0              # Chance to explore.
         self.epsilon_min = 0.01         # Minimum chance to explore.
-        self.epsilon_decay = 0.995       # Exploration decay factor.
-        self.learning_rate = 0.1      # Learning rate.
+        self.epsilon_decay = 0.995      # Exploration decay factor.
+        self.learning_rate = 0.1        # Learning rate.
 
     def bucketize(self, state):
         """
@@ -101,7 +102,7 @@ class Qmodel:
             for ts in range(timesteps):
                 action = self.policy(state)                     # Figure out what action to do.
                 next_state, reward, done, _ = env.step(action)  # Do the action.
-                reward = reward if not done else -10            # Punish for losing.
+                reward = reward if not done else -timesteps     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
                 self.updateQ(state, next_state, action, reward)     # Update Q-table.
@@ -109,21 +110,20 @@ class Qmodel:
                 state = next_state
                 if done or ts >= timesteps -1:
                     scores.append(ts)
-                    #print(f'Episode {e}: Score: {ts}')
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
-                        print(f'Episode {e+1}/{episodes}, average: {average}')
+                        print(f'Episode {e + 1}/{episodes}, average: {average}')
                         rolling_average.append(average)
                     break
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
-            if self.discount_factor*1.01 < 1:
-                self.discount_factor *= 1.01
+
+            self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
         # Plot rolling average
         x = [i + average_size for i in range(len(rolling_average))]
         plt.plot(x, rolling_average)
-        plt.title("Rolling average of past " + str(average_size) + " episodes.")
+        plt.title(f"Rolling average of past {average_size} episodes.")
         plt.ylabel("Average score")
         plt.xlabel("Episodes")
         plt.ylim(0, timesteps)
