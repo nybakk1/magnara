@@ -34,7 +34,8 @@ apt-get install python3
 apt-get install python3-pip 
 
 pip3 install gym
-pip3 install box2d-py
+pip3 install tensorflow
+pip3 install keras
 ```
 
 #### Arch Linux based distribution
@@ -44,20 +45,22 @@ pacman -S python
 pacman -S python-pip
 
 pip install gym
-pip install box2d-py
+pip install tensorflow
+pip install keras
 ```
 
 ### mac OSX
 ```bash
 pip3 install gym
-pip3 install box2d-py
+pip3 install tensorflow
+pip3 install keras
 ```
 
 ## Authors
 
 * **Daniel Klock** - [danielakl](https://github.com/danielakl)
 * **Kristian Nybakken Lund** - [nybakk1](https://github.com/nybakk1)
-* **Kristoffer Arntzen** - [KristofferArn](https://github.com/KristofferArn)
+* **Kristoffer Arntzen** - [kristofferarn](https://github.com/kristofferarn)
 * **Roy Åne Sylthe** - [rsylthe](https://github.com/rsylthe)
 
 ## License
