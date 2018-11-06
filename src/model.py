@@ -15,10 +15,12 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-episodes = 500
-max_score = 200
+episodes = 2000
+max_score = 500
 batch_size = 32
 average_size = 100
+render = False
+when_should_the_code_render_the_cart_pole_v1 = 500
 
 
 class DeepQAgent:
@@ -90,10 +92,12 @@ class DeepQAgent:
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
         for e in range(episodes):
+
             state = self.env.reset()
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
-                # env.render()
+                if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
+                    self.env.render()
                 action = self.policy(state)
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
                 reward = reward if not done else -timesteps             # Punish for losing.
