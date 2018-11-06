@@ -40,27 +40,21 @@ class Qmodel:
 
     def policy(self, state):
         """
-
-        :param state:
-        :return:
+        Policy funtion to figure out what action to take.
+        :param state: a discrete
+        :return: an action
         """
         # Return random action
         if np.random.rand() <= self.epsilon:
-            # print("RANDOM")
             return random.randrange(self.action_size)
 
         return np.argmax(self.Q[self.hash(state)])
 
-        #if self.Q[hash(state)] is None:
-
-
-
-
     def hash(self, state):
         """
-
-        :param state:
-        :return:
+        Hash a discrete state to a unique integer value.
+        :param state: list of integer values.
+        :return: unique integer hash.
         """
         hash = 0
         hash += self.bucket[1] * self.bucket[2] * self.bucket[3] * state[0]
@@ -71,32 +65,46 @@ class Qmodel:
 
     def buildQ(self):
         """
-
-        :return:
+        Build the initial Q-table, ready for indexing.
+        :return: the new Q-table.
         """
         Q = []
         for i in range(self.bucket[0] * self.bucket[1] * self.bucket[2] * self.bucket[3]):
             Q.append([0, 0])
         return Q
 
+    def updateQ(self, state, next_state, action, reward):
+        """
+        Updates Q-table
+        :param state: list of integer values.
+        :param next_state: list of integer values.
+        :param action: integer value.
+        :param reward: integer value.
+        """
+        state = self.hash(state)
+        next_state = self.hash(next_state)
+        self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
+
+
     def run(self, episodes=500, timesteps=200, average_size=50):
         """
-
-        :param episodes:
-        :param timesteps:
-        :return:
+        Run model, OpenAI gym simulates an environment and the agent starts to learn.
+        The rolling average of the scores is plotted at the end.
+        :param episodes: positive integer
+        :param timesteps: positive integer
+        :param average_size: positive integer
         """
-        scores = []
-        rolling_average = []
+        scores = []             # Save scores to calculate average scores.
+        rolling_average = []    # Save average score for plotting.
         for e in range(episodes):
-            state = self.bucketize(self.env.reset())
+            state = self.bucketize(self.env.reset())            # Make state discrete.
             for ts in range(timesteps):
                 action = self.policy(state)                     # Figure out what action to do.
-                next_state, reward, done, _ = env.step(action)  # Do action
-                reward = reward if not done else -10
-                next_state = self.bucketize(next_state)
-                self.Q[self.hash(state)][action] = (1 - self.learning_rate) * self.Q[self.hash(state)][action] + self.learning_rate * (reward + self.discount_factor * np.argmax(self.Q[self.hash(next_state)]))
-                # self.Q[self.hash(state)][action] += self.learning_rate * (-self.Q[self.hash(state)][action] + reward + self.discount_factor + np.argmax(self.Q[self.hash(next_state)])) # Lernningnne ehth state s is bad things
+                next_state, reward, done, _ = env.step(action)  # Do the action.
+                reward = reward if not done else -10            # Punish for losing.
+                next_state = self.bucketize(next_state)         # Make next_state discrete.
+
+                self.updateQ(state, next_state, action, reward)     # Update Q-table.
 
                 state = next_state
                 if done or ts >= timesteps -1:
@@ -111,7 +119,6 @@ class Qmodel:
                 self.epsilon *= self.epsilon_decay
             if self.discount_factor*1.01 < 1:
                 self.discount_factor *= 1.01
-            print(self.discount_factor)
 
         # Plot rolling average
         x = [i + average_size for i in range(len(rolling_average))]
