@@ -4,8 +4,9 @@ import math
 import random
 import matplotlib.pyplot as plt
 
-episodes = 1000
-timesteps = 200
+episodes = 2000
+timesteps = 500
+average_size = 100
 
 
 class Qmodel:
@@ -28,7 +29,7 @@ class Qmodel:
     def bucketize(self, state):
         """
         Bucketize the state to be discrete.
-        Credit: TODO: implement credit here
+        Credit: https://gist.github.com/n1try/af0b8476ae4106ec098fea1dfe57f578
         :param state: state from environment.
         :return: discrete ndarray
         """
@@ -100,9 +101,10 @@ class Qmodel:
         for e in range(episodes):
             state = self.bucketize(self.env.reset())            # Make state discrete.
             for ts in range(timesteps):
+                #if e % 500 == 0: self.env.render()
                 action = self.policy(state)                     # Figure out what action to do.
                 next_state, reward, done, _ = env.step(action)  # Do the action.
-                reward = reward if not done else -timesteps     # Punish for losing.
+                reward = reward if not done else -timesteps/2   # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
                 self.updateQ(state, next_state, action, reward)     # Update Q-table.
@@ -132,4 +134,4 @@ class Qmodel:
 
 env = gym.make('CartPole-v1')
 q_model = Qmodel(env)
-q_model.run(episodes, timesteps)
+q_model.run(episodes, timesteps, average_size)
