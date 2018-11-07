@@ -36,6 +36,7 @@ class DeepQAgent:
         self.epsilon_min = 0.01         # Minimum chance to explore.
         self.epsilon_decay = 0.995      # Exploration decay factor.
         self.learning_rate = 1e-3       # Learning rate.
+        self.learning_rate_decay = 0.0001  # Learning rate decay
 
         self.action_space = self.env.action_space.n
         self.observation_space = self.env.observation_space.shape[0]
@@ -47,7 +48,7 @@ class DeepQAgent:
         model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_space, activation='linear'))
         # TODO: Find the perfect decay value
-        model.compile(optimizer=Adam(lr=self.learning_rate, decay=0.0001), loss='mse')
+        model.compile(optimizer=Adam(lr=self.learning_rate, decay=self.learning_rate_decay), loss='mse')
         return model
 
     def save_state(self, state, action, reward, done, next_state):
@@ -110,7 +111,6 @@ class DeepQAgent:
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
         for e in range(episodes):
-
             state = self.env.reset()
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
