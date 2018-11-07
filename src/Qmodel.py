@@ -29,7 +29,7 @@ class Qmodel:
     def bucketize(self, state):
         """
         Bucketize the state to be discrete.
-        Credit: TODO: implement credit here
+        Credit: https://gist.github.com/n1try/af0b8476ae4106ec098fea1dfe57f578
         :param state: state from environment.
         :return: discrete ndarray
         """
