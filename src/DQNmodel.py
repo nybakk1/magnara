@@ -15,17 +15,18 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-episodes = 500
-max_score = 200
+episodes = 2000
+max_score = 500
 batch_size = 32
 average_size = 100
+render = False
+when_should_the_code_render_the_cart_pole_v1 = 500
 
 
 class DeepQAgent:
-    def __init__(self, env, buckets=(1, 1, 6, 12)):
+    def __init__(self, env):
         # hyperparameters
         self.memory = deque(maxlen=2000)
-        self.buckets = buckets
         self.env = env
 
         self.discount_factor = 0.1      # Increases as episodes go on to weight later actions less.
@@ -35,6 +36,7 @@ class DeepQAgent:
         self.epsilon_min = 0.01         # Minimum chance to explore.
         self.epsilon_decay = 0.995      # Exploration decay factor.
         self.learning_rate = 1e-3       # Learning rate.
+        self.learning_rate_decay = 0.0001  # Learning rate decay
 
         self.action_space = self.env.action_space.n
         self.observation_space = self.env.observation_space.shape[0]
@@ -45,23 +47,29 @@ class DeepQAgent:
         model.add(Dense(32, input_dim=self.observation_space, activation='relu'))
         model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_space, activation='linear'))
-        model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
+        # TODO: Find the perfect decay value
+        model.compile(optimizer=Adam(lr=self.learning_rate, decay=self.learning_rate_decay), loss='mse')
         return model
 
-    def discretize(self, state):
-        upper = [self.env.observation_space.high[0], 1.0, self.env.observation_space.high[2], math.radians(41.8)]
-        lower = [self.env.observation_space.low[0], -1.0, self.env.observation_space.low[2], -math.radians(41.8)]
-        ratio = [(state[i] + abs(lower[i])) / (upper[i] - lower[i]) for i in range(len(state))]
-        new_state = [int(round((self.buckets[i] - 1) * ratio[i])) for i in range(len(state))]
-        new_state = [min(self.buckets[i] - 1, max(0, new_state[i])) for i in range(len(state))]
-        return np.asarray(tuple(new_state))
-
-    # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
+        """
+        Save an experience in memory for use later when training
+
+        :param state:
+        :param action:
+        :param reward:
+        :param done:
+        :param next_state:
+        """
         self.memory.append((state, action, reward, done, next_state))
 
-    # bestemmer og utfører den action som velges.
     def policy(self, state):
+        """
+        Policy funtion to figure out what action to take.
+
+        :param state:
+        :return: an action
+        """
         # TODO: Random Action Probability (Read: RAP)
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
@@ -69,8 +77,12 @@ class DeepQAgent:
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])  # This will fuck up, maybe.
 
-    # trener opp modellen. Plukker ut en batch med states fra minnet.
     def train(self, batch_size):
+        """
+        Trains the model by picking a random batch of earlier experiences from memory
+
+        :param batch_size: positive integer
+        """
         if len(self.memory) < batch_size:
             batch_size = len(self.memory)
 
@@ -86,14 +98,24 @@ class DeepQAgent:
             self.epsilon *= self.epsilon_decay
         self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
-    def run(self, episodes=500, timesteps=200, batch_size=32, average_size=50):
+    def run(self, episodes=1000, timesteps=500, batch_size=32, average_size=100):
+        """
+        Run model, OpenAI gym simulates an environment and the agent starts to learn.
+        The rolling average of the scores is plotted at the end.
+
+        :param episodes: positive integer
+        :param timesteps: positive integer
+        :param batch_size: positive integer
+        :param average_size: positive integer
+        """
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
         for e in range(episodes):
             state = self.env.reset()
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
-                # env.render()
+                if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
+                    self.env.render()
                 action = self.policy(state)
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
                 reward = reward if not done else -timesteps             # Punish for losing.
