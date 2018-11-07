@@ -46,15 +46,29 @@ class DeepQAgent:
         model.add(Dense(32, input_dim=self.observation_space, activation='relu'))
         model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_space, activation='linear'))
-        model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
+        # TODO: Find the perfect decay value
+        model.compile(optimizer=Adam(lr=self.learning_rate, decay=0.0001), loss='mse')
         return model
 
-    # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
+        """
+        Save an experience in memory for use later when training
+
+        :param state:
+        :param action:
+        :param reward:
+        :param done:
+        :param next_state:
+        """
         self.memory.append((state, action, reward, done, next_state))
 
-    # bestemmer og utfører den action som velges.
     def policy(self, state):
+        """
+        Policy funtion to figure out what action to take.
+
+        :param state:
+        :return: an action
+        """
         # TODO: Random Action Probability (Read: RAP)
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
@@ -62,8 +76,12 @@ class DeepQAgent:
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])  # This will fuck up, maybe.
 
-    # trener opp modellen. Plukker ut en batch med states fra minnet.
     def train(self, batch_size):
+        """
+        Trains the model by picking a random batch of earlier experiences from memory
+
+        :param batch_size: positive integer
+        """
         if len(self.memory) < batch_size:
             batch_size = len(self.memory)
 
@@ -79,7 +97,16 @@ class DeepQAgent:
             self.epsilon *= self.epsilon_decay
         self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
-    def run(self, episodes=500, timesteps=200, batch_size=32, average_size=50):
+    def run(self, episodes=1000, timesteps=500, batch_size=32, average_size=100):
+        """
+        Run model, OpenAI gym simulates an environment and the agent starts to learn.
+        The rolling average of the scores is plotted at the end.
+
+        :param episodes: positive integer
+        :param timesteps: positive integer
+        :param batch_size: positive integer
+        :param average_size: positive integer
+        """
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
         for e in range(episodes):
