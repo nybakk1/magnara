@@ -24,10 +24,9 @@ when_should_the_code_render_the_cart_pole_v1 = 500
 
 
 class DeepQAgent:
-    def __init__(self, env, buckets=(1, 1, 6, 12)):
+    def __init__(self, env):
         # hyperparameters
         self.memory = deque(maxlen=2000)
-        self.buckets = buckets
         self.env = env
 
         self.discount_factor = 0.1      # Increases as episodes go on to weight later actions less.
@@ -49,14 +48,6 @@ class DeepQAgent:
         model.add(Dense(self.action_space, activation='linear'))
         model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
         return model
-
-    def discretize(self, state):
-        upper = [self.env.observation_space.high[0], 1.0, self.env.observation_space.high[2], math.radians(41.8)]
-        lower = [self.env.observation_space.low[0], -1.0, self.env.observation_space.low[2], -math.radians(41.8)]
-        ratio = [(state[i] + abs(lower[i])) / (upper[i] - lower[i]) for i in range(len(state))]
-        new_state = [int(round((self.buckets[i] - 1) * ratio[i])) for i in range(len(state))]
-        new_state = [min(self.buckets[i] - 1, max(0, new_state[i])) for i in range(len(state))]
-        return np.asarray(tuple(new_state))
 
     # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
