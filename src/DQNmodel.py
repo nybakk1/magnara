@@ -2,12 +2,14 @@ from keras.models import Sequential
 from keras.layers import Dense, activations
 from keras.optimizers import Adam
 from collections import deque
+from sklearn import preprocessing
 
 import gym as G
 import numpy as np
 import math
 import random
 import matplotlib.pyplot as plt
+import importlib
 
 # Force TensorFlow to run on CPU. Comment out these lines
 # if you don't use TensorFlow-GPU
@@ -51,6 +53,25 @@ class DeepQAgent:
         model.compile(optimizer=Adam(lr=self.learning_rate, decay=self.learning_rate_decay), loss='mse')
         return model
 
+    # def normalize(self, state):
+    #     high = [4.8, 3.4028235e+3, 4.1887903e-01, 3.4028235e+3]
+    #     low = [-4.8, -3.4028235e+3, -4.1887903e-01, -3.4028235e+3]
+    #     # getcontext().prec = 6
+    #     for i in range(len(state)):
+    #         value = state[i]
+    #         min = low[i]
+    #         max = high[i]
+    #         state[i] = ((value - min) / (max - min))
+    #     return state
+
+    # def normalize(self, state):
+    #     for i in range(len(state)):
+    #         foo = preprocessing.minmax_scale(state, (0, 1))
+    #
+    #     # foobar = foo.fit_transform(state)
+    #     return foo
+
+    # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
         """
         Save an experience in memory for use later when training
@@ -63,7 +84,7 @@ class DeepQAgent:
         """
         self.memory.append((state, action, reward, done, next_state))
 
-    def policy(self, state):
+    def policy(self, state, explore=True):
         """
         Policy funtion to figure out what action to take.
 
@@ -71,7 +92,7 @@ class DeepQAgent:
         :return: an action
         """
         # TODO: Random Action Probability (Read: RAP)
-        if np.random.rand() <= self.epsilon:
+        if explore and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
 
         act_values = self.model.predict(state)
@@ -98,7 +119,7 @@ class DeepQAgent:
             self.epsilon *= self.epsilon_decay
         self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
-    def run(self, episodes=1000, timesteps=500, batch_size=32, average_size=100):
+    def run(self, episodes=1000, timesteps=500, batch_size=32, average_size=100, explore=True):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
@@ -112,13 +133,15 @@ class DeepQAgent:
         rolling_average = []    # Save average score for plotting.
         for e in range(episodes):
             state = self.env.reset()
+            # state = self.normalize(state)
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
                 if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
                     self.env.render()
-                action = self.policy(state)
+                action = self.policy(state, explore)
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
                 reward = reward if not done else -timesteps             # Punish for losing.
+                # next_state = self.normalize(next_state)
                 next_state = np.reshape(next_state, [1, self.observation_space])
                 self.save_state(state, action, reward, done, next_state)
 
@@ -143,4 +166,5 @@ class DeepQAgent:
 
 env = G.make('CartPole-v1')
 agent = DeepQAgent(env)
-agent.run(episodes, max_score, batch_size, average_size)
+agent.run(episodes, max_score, batch_size, average_size, True)
+agent.run(episodes, max_score, batch_size, average_size, False)

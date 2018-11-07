@@ -5,8 +5,9 @@ import random
 import matplotlib.pyplot as plt
 
 episodes = 1000
-timesteps = 200
-
+timesteps = 500
+render = False
+when_should_the_code_render_the_cart_pole_v1 = 200
 
 class Qmodel:
     def __init__(self, env, bucket=(1, 1, 6, 12)):
@@ -39,14 +40,14 @@ class Qmodel:
         new_state = [min(self.bucket[i] - 1, max(0, new_state[i])) for i in range(len(state))]
         return np.asarray(tuple(new_state))
 
-    def policy(self, state):
+    def policy(self, state, explore=True):
         """
         Policy funtion to figure out what action to take.
         :param state: a discrete
         :return: an action
         """
         # Return random action
-        if np.random.rand() <= self.epsilon:
+        if explore and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
 
         return np.argmax(self.Q[self.hash(state)])
@@ -87,7 +88,7 @@ class Qmodel:
         self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
 
 
-    def run(self, episodes=500, timesteps=200, average_size=50):
+    def run(self, explore=True, episodes=500, timesteps=200, average_size=100):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
@@ -97,12 +98,16 @@ class Qmodel:
         """
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
+        episode_solved = -1
+        found_solved = False
         for e in range(episodes):
             state = self.bucketize(self.env.reset())            # Make state discrete.
             for ts in range(timesteps):
-                action = self.policy(state)                     # Figure out what action to do.
+                if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
+                    self.env.render()
+                action = self.policy(state, explore)                     # Figure out what action to do.
                 next_state, reward, done, _ = env.step(action)  # Do the action.
-                reward = reward if not done else -timesteps     # Punish for losing.
+                reward = reward if not done else (-timesteps/2)     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
                 self.updateQ(state, next_state, action, reward)     # Update Q-table.
@@ -114,6 +119,9 @@ class Qmodel:
                         average = np.average(scores[e-average_size:e])
                         print(f'Episode {e + 1}/{episodes}, average: {average}')
                         rolling_average.append(average)
+                        if average == float(timesteps-1) and not found_solved:
+                            episode_solved = e - 99
+                            found_solved = True
                     break
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
@@ -129,7 +137,10 @@ class Qmodel:
         plt.ylim(0, timesteps)
         plt.show()
 
+        print(f"Problem solved after {episode_solved} episodes")
+
 
 env = gym.make('CartPole-v1')
 q_model = Qmodel(env)
-q_model.run(episodes, timesteps)
+q_model.run(True, episodes, timesteps)
+q_model.run(False, episodes, timesteps)
