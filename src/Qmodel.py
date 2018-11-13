@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 episodes = 1000
 timesteps = 500
+average_size = 100
 render = False
 when_should_the_code_render_the_cart_pole_v1 = 200
 
@@ -129,18 +130,16 @@ class Qmodel:
             self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
         # Plot rolling average
-        x = [i + average_size for i in range(len(rolling_average))]
-        plt.plot(x, rolling_average)
-        plt.title(f"Rolling average of past {average_size} episodes.")
-        plt.ylabel("Average score")
-        plt.xlabel("Episodes")
-        plt.ylim(0, timesteps)
-        plt.show()
+        # plt.ylim(0, timesteps)
 
         print(f"Problem solved after {episode_solved} episodes")
+        return scores, rolling_average
 
 
 env = gym.make('CartPole-v1')
 q_model = Qmodel(env)
-q_model.run(True, episodes, timesteps)
-q_model.run(False, episodes, timesteps)
+train = q_model.run(True, episodes, timesteps, average_size)
+test = q_model.run(False, episodes, timesteps, average_size)
+
+from Plot import plot
+plot([([i + average_size for i in range(len(train[1]))], train[1]), ([i + average_size for i in range(len(test[1]))], test[1])], ["Training run", "Testing run"], f"Rolling average of past {average_size} episodes.", ("Episode", "Average score"))
