@@ -24,6 +24,10 @@ average_size = 100
 render = False
 when_should_the_code_render_the_cart_pole_v1 = 500
 
+# Increase batch-size
+inc_every_episode = 50
+batch_size_inc = 10
+
 
 class DeepQAgent:
     def __init__(self, env):
@@ -37,8 +41,8 @@ class DeepQAgent:
         self.epsilon = 1.0              # Chance to explore.
         self.epsilon_min = 0.01         # Minimum chance to explore.
         self.epsilon_decay = 0.995      # Exploration decay factor.
-        self.learning_rate = 1e-3       # Learning rate.
-        self.learning_rate_decay = 0.0001  # Learning rate decay
+        self.learning_rate = 1e-2       # Learning rate.
+        self.learning_rate_decay = 0.000001  # Learning rate decay
 
         self.action_space = self.env.action_space.n
         self.observation_space = self.env.observation_space.shape[0]
@@ -98,7 +102,7 @@ class DeepQAgent:
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])  # This will fuck up, maybe.
 
-    def train(self, batch_size):
+    def train(self, batch_size, e):
         """
         Trains the model by picking a random batch of earlier experiences from memory
 
@@ -106,6 +110,8 @@ class DeepQAgent:
         """
         if len(self.memory) < batch_size:
             batch_size = len(self.memory)
+        if e % inc_every_episode is 0:
+            batch_size += batch_size_inc
 
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, done, next_state in minibatch:
@@ -153,7 +159,7 @@ class DeepQAgent:
                         print(f'Episode {e + 1}/{episodes}, average: {average}')
                         rolling_average.append(average)
                     break
-            self.train(batch_size)
+            self.train(batch_size,e)
 
         return scores, rolling_average
 
