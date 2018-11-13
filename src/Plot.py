@@ -5,7 +5,7 @@ def plot(data, legend, title="", labels=("", "")):
     fig = plt.figure()
     for i in range(len(data)):
         ax = fig.add_subplot(111)
-        if i >= len(legend):
+        if i < len(legend):
             ax.plot(data[i][0], data[i][1], label=legend[i])
             ax.legend()
         else:
