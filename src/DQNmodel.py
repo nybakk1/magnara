@@ -164,4 +164,7 @@ train = agent.run(episodes, max_score, batch_size, average_size, True)
 test = agent.run(episodes, max_score, batch_size, average_size, False)
 
 from Plot import plot
-plot([[[i+average_size for i in range(len(train[1]))], train[1]], [[i+average_size for i in range(len(test[1]))], test[1]]], ["Training run", "Test run"], f"Rolling average of past {average_size} episodes.", ["Episode", "Average score"])
+plot(data=[[[i+average_size for i in range(len(train[1]))], train[1]], [[i+average_size for i in range(len(test[1]))], test[1]]],
+     legend=["Training run", "Test run"],
+     title=f"Rolling average of past {average_size} episodes.",
+     labels=["Episode", "Average score"])
