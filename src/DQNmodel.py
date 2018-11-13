@@ -155,16 +155,13 @@ class DeepQAgent:
                     break
             self.train(batch_size)
 
-        # Plot rolling average
-        x = [i+average_size for i in range(len(rolling_average))]
-        plt.plot(x, rolling_average)
-        plt.title(f"Rolling average of past {average_size} episodes.")
-        plt.ylabel("Average score")
-        plt.xlabel("Episodes")
-        plt.show()
+        return scores, rolling_average
 
 
 env = G.make('CartPole-v1')
 agent = DeepQAgent(env)
-agent.run(episodes, max_score, batch_size, average_size, True)
-agent.run(episodes, max_score, batch_size, average_size, False)
+train = agent.run(episodes, max_score, batch_size, average_size, True)
+test = agent.run(episodes, max_score, batch_size, average_size, False)
+
+from Plot import plot
+plot([[[i+average_size for i in range(len(train[1]))], train[1]], [[i+average_size for i in range(len(test[1]))], test[1]]], ["Training run", "Test run"], f"Rolling average of past {average_size} episodes.", ["Episode", "Average score"])
