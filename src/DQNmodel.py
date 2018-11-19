@@ -12,16 +12,12 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-# episodes = 2000
-# max_score = 500
-# batch_size = 32
-# average_size = 100
-render = False
-when_should_the_code_render_the_cart_pole_v1 = 500
+render = False      # TODO: Integrate into run
+when_should_the_code_render_the_cart_pole_v1 = 500  # TODO: Integrate into run
 
 # Increase batch-size
-inc_every_episode = 50
-batch_size_inc = 10
+inc_every_episode = 50 # TODO: Remove, put as parameter of train or in model
+batch_size_inc = 10 # TODO: Remove, put as parameter of train or in model
 
 
 class DeepQAgent:
@@ -52,25 +48,6 @@ class DeepQAgent:
         model.compile(optimizer=Adam(lr=self.learning_rate, decay=self.learning_rate_decay), loss='mse')
         return model
 
-    # def normalize(self, state):
-    #     high = [4.8, 3.4028235e+3, 4.1887903e-01, 3.4028235e+3]
-    #     low = [-4.8, -3.4028235e+3, -4.1887903e-01, -3.4028235e+3]
-    #     # getcontext().prec = 6
-    #     for i in range(len(state)):
-    #         value = state[i]
-    #         min = low[i]
-    #         max = high[i]
-    #         state[i] = ((value - min) / (max - min))
-    #     return state
-
-    # def normalize(self, state):
-    #     for i in range(len(state)):
-    #         foo = preprocessing.minmax_scale(state, (0, 1))
-    #
-    #     # foobar = foo.fit_transform(state)
-    #     return foo
-
-    # lagrer staten i minnet
     def save_state(self, state, action, reward, done, next_state):
         """
         Save an experience in memory for use later when training
@@ -85,7 +62,7 @@ class DeepQAgent:
 
     def policy(self, state, explore=True):
         """
-        Policy funtion to figure out what action to take.
+        Policy function to figure out what action to take.
 
         :param state:
         :return: an action
@@ -95,17 +72,17 @@ class DeepQAgent:
             return random.randrange(self.action_space)
 
         act_values = self.model.predict(state)
-        return np.argmax(act_values[0])  # This will fuck up, maybe.
+        return np.argmax(act_values[0])
 
-    def train(self, batch_size, e):
+    def train(self, batch_size, episode):
         """
         Trains the model by picking a random batch of earlier experiences from memory
-
-        :param batch_size: positive integer
+        :param batch_size: positive integer the amount of memories to train on, taken from memory.
+        :param episode: positive integer the current episode
         """
         if len(self.memory) < batch_size:
             batch_size = len(self.memory)
-        if e % inc_every_episode is 0:
+        if e is not 0 and episode % inc_every_episode is 0:
             batch_size += batch_size_inc
 
         minibatch = random.sample(self.memory, batch_size)
@@ -125,10 +102,10 @@ class DeepQAgent:
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
 
-        :param episodes: positive integer
-        :param timesteps: positive integer
-        :param batch_size: positive integer
-        :param average_size: positive integer
+        :param episodes: positive integer the amount of episodes to run
+        :param timesteps: positive integer the time to keep the pole upright
+        :param batch_size: positive integer the amount of memories to train on for each episode
+        :param average_size: positive integer the amount of previous episodes
         """
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
@@ -141,7 +118,7 @@ class DeepQAgent:
                     self.env.render()
                 action = self.policy(state, explore)
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
-                reward = reward if not done else -timesteps             # Punish for losing.
+                reward = reward if not done else -10             # Punish for losing.
                 # next_state = self.normalize(next_state)
                 next_state = np.reshape(next_state, [1, self.observation_space])
                 self.save_state(state, action, reward, done, next_state)
@@ -157,15 +134,3 @@ class DeepQAgent:
             self.train(batch_size,e)
 
         return scores, rolling_average
-
-
-# env = G.make('CartPole-v1')
-# agent = DeepQAgent(env)
-# train = agent.run(episodes, max_score, batch_size, average_size, True)
-# test = agent.run(episodes, max_score, batch_size, average_size, False)
-#
-# from Plot import plot
-# plot(data=[[[i+average_size for i in range(len(train[1]))], train[1]], [[i+average_size for i in range(len(test[1]))], test[1]]],
-#      legend=["Training run", "Test run"],
-#      title=f"Rolling average of past {average_size} episodes.",
-#      labels=["Episode", "Average score"])

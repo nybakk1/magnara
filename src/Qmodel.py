@@ -1,14 +1,10 @@
-import gym
 import numpy as np
 import math
 import random
-import matplotlib.pyplot as plt
 
-episodes = 1000
-timesteps = 500
-average_size = 100
 render = False
 when_should_the_code_render_the_cart_pole_v1 = 200
+
 
 class Qmodel:
     def __init__(self, env, bucket=(1, 1, 6, 12)):
@@ -17,7 +13,7 @@ class Qmodel:
         self.observation_size = env.observation_space.shape[0]
 
         self.bucket = bucket
-        self.Q = self.buildQ()
+        self.Q = self.build_q()
 
         self.discount_factor = 0.1      # Increases as episodes go on to weight later actions less.
         self.discount_fact_inc = 0.002  # How much discount factor increases.
@@ -66,7 +62,7 @@ class Qmodel:
         hash += state[3]
         return hash
 
-    def buildQ(self):
+    def build_q(self):
         """
         Build the initial Q-table, ready for indexing.
         :return: the new Q-table.
@@ -76,7 +72,7 @@ class Qmodel:
             Q.append([0, 0])
         return Q
 
-    def updateQ(self, state, next_state, action, reward):
+    def update_q(self, state, next_state, action, reward):
         """
         Updates Q-table
         :param state: list of integer values.
@@ -88,14 +84,14 @@ class Qmodel:
         next_state = self.hash(next_state)
         self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
 
-
     def run(self, explore=True, episodes=500, timesteps=200, average_size=100):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
-        :param episodes: positive integer
-        :param timesteps: positive integer
-        :param average_size: positive integer
+        :param explore: boolean whether the model should do exploring or not.
+        :param episodes: positive integer how many episodes the model should train on.
+        :param timesteps: positive integer how long the model will try to keep the pole up.
+        :param average_size: positive integer how many previous episodes the rolling average should use.
         """
         scores = []             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
@@ -111,7 +107,7 @@ class Qmodel:
                 reward = reward if not done else (-timesteps/2)     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
-                self.updateQ(state, next_state, action, reward)     # Update Q-table.
+                self.update_q(state, next_state, action, reward)     # Update Q-table.
 
                 state = next_state
                 if done or ts >= timesteps -1:
@@ -129,17 +125,5 @@ class Qmodel:
 
             self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
-        # Plot rolling average
-        # plt.ylim(0, timesteps)
-
         print(f"Problem solved after {episode_solved} episodes")
         return scores, rolling_average
-
-
-# env = gym.make('CartPole-v1')
-# q_model = Qmodel(env)
-# train = q_model.run(True, episodes, timesteps, average_size)
-# test = q_model.run(False, episodes, timesteps, average_size)
-#
-# from Plot import plot
-# plot([([i + average_size for i in range(len(train[1]))], train[1]), ([i + average_size for i in range(len(test[1]))], test[1])], ["Training run", "Testing run"], f"Rolling average of past {average_size} episodes.", ("Episode", "Average score"))
