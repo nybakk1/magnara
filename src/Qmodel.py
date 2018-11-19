@@ -118,7 +118,7 @@ class Qmodel:
                     scores.append(ts)
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
-                        print(f'Episode {e + 1}/{episodes}, average: {average}')
+                        print(f'Episode {e + 1}/{episodes}\tscore: {ts}\taverage: {average}')
                         rolling_average.append(average)
                         if average == float(timesteps-1) and not found_solved:
                             episode_solved = e - 99
