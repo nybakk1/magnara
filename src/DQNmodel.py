@@ -31,9 +31,9 @@ class DeepQAgent:
         self.env = env
 
         self.episodes = episodes
-        self.discount_factor = 0.1      # Increases as episodes go on to weight later actions less.
-        self.discount_fact_inc = 0.002  # How much discount factor increases.
-        self.discount_fact_max = 1.0    # Maximum limit for discount factor.
+        self.discount_factor = 0.8      # Increases as episodes go on to weight later actions less.
+        # self.discount_fact_inc = 0.002  # How much discount factor increases.
+        # self.discount_fact_max = 1.0    # Maximum limit for discount factor.
         self.epsilon = 1.0              # Chance to explore.
         self.epsilon_min = 0.01         # Minimum chance to explore.
         self.epsilon_decay = np.e ** (np.log(self.epsilon_min / self.epsilon) / (episodes * 0.8)) # Exploration decay factor.
@@ -119,7 +119,7 @@ class DeepQAgent:
             self.model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-        self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
+        # self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
     def run(self, timesteps=500, batch_size=32, average_size=100, explore=True, run=1):
         """

@@ -111,7 +111,7 @@ class Qmodel:
                 reward = reward if not done else (-timesteps/2)     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
-                self.updateQ(state, next_state, action, reward)     # Update Q-table.
+                self.updateQ(state, next_state, action, reward) if explore else None     # Update Q-table.
 
                 state = next_state
                 if done or ts >= timesteps -1:
