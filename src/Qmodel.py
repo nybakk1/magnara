@@ -107,14 +107,14 @@ class Qmodel:
                 reward = reward if not done else (-timesteps/2)     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
-                self.update_q(state, next_state, action, reward)     # Update Q-table.
+                self.update_q(state, next_state, action, reward) if explore else None     # Update Q-table.
 
                 state = next_state
                 if done or ts >= timesteps -1:
                     scores.append(ts)
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
-                        print(f'Episode {e + 1}/{episodes}, average: {average}')
+                        print(f'Episode {e + 1}/{episodes}\tscore: {ts}\taverage: {average}')
                         rolling_average.append(average)
                         if average == float(timesteps-1) and not found_solved:
                             episode_solved = e - 99
