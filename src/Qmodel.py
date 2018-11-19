@@ -107,7 +107,7 @@ class Qmodel:
                 if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
                     self.env.render()
                 action = self.policy(state, explore)                     # Figure out what action to do.
-                next_state, reward, done, _ = env.step(action)  # Do the action.
+                next_state, reward, done, _ = self.env.step(action)  # Do the action.
                 reward = reward if not done else (-timesteps/2)     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
