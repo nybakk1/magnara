@@ -2,14 +2,9 @@ from keras.models import Sequential
 from keras.layers import Dense, activations
 from keras.optimizers import Adam
 from collections import deque
-from sklearn import preprocessing
 
-import gym as G
 import numpy as np
-import math
 import random
-import matplotlib.pyplot as plt
-import importlib
 
 # Force TensorFlow to run on CPU. Comment out these lines
 # if you don't use TensorFlow-GPU
@@ -17,10 +12,10 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-episodes = 2000
-max_score = 500
-batch_size = 32
-average_size = 100
+# episodes = 2000
+# max_score = 500
+# batch_size = 32
+# average_size = 100
 render = False
 when_should_the_code_render_the_cart_pole_v1 = 500
 
@@ -164,13 +159,13 @@ class DeepQAgent:
         return scores, rolling_average
 
 
-env = G.make('CartPole-v1')
-agent = DeepQAgent(env)
-train = agent.run(episodes, max_score, batch_size, average_size, True)
-test = agent.run(episodes, max_score, batch_size, average_size, False)
-
-from Plot import plot
-plot(data=[[[i+average_size for i in range(len(train[1]))], train[1]], [[i+average_size for i in range(len(test[1]))], test[1]]],
-     legend=["Training run", "Test run"],
-     title=f"Rolling average of past {average_size} episodes.",
-     labels=["Episode", "Average score"])
+# env = G.make('CartPole-v1')
+# agent = DeepQAgent(env)
+# train = agent.run(episodes, max_score, batch_size, average_size, True)
+# test = agent.run(episodes, max_score, batch_size, average_size, False)
+#
+# from Plot import plot
+# plot(data=[[[i+average_size for i in range(len(train[1]))], train[1]], [[i+average_size for i in range(len(test[1]))], test[1]]],
+#      legend=["Training run", "Test run"],
+#      title=f"Rolling average of past {average_size} episodes.",
+#      labels=["Episode", "Average score"])

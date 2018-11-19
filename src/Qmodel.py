@@ -136,10 +136,10 @@ class Qmodel:
         return scores, rolling_average
 
 
-env = gym.make('CartPole-v1')
-q_model = Qmodel(env)
-train = q_model.run(True, episodes, timesteps, average_size)
-test = q_model.run(False, episodes, timesteps, average_size)
-
-from Plot import plot
-plot([([i + average_size for i in range(len(train[1]))], train[1]), ([i + average_size for i in range(len(test[1]))], test[1])], ["Training run", "Testing run"], f"Rolling average of past {average_size} episodes.", ("Episode", "Average score"))
+# env = gym.make('CartPole-v1')
+# q_model = Qmodel(env)
+# train = q_model.run(True, episodes, timesteps, average_size)
+# test = q_model.run(False, episodes, timesteps, average_size)
+#
+# from Plot import plot
+# plot([([i + average_size for i in range(len(train[1]))], train[1]), ([i + average_size for i in range(len(test[1]))], test[1])], ["Training run", "Testing run"], f"Rolling average of past {average_size} episodes.", ("Episode", "Average score"))
