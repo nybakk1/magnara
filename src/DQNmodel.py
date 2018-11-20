@@ -17,13 +17,13 @@ when_should_the_code_render_the_cart_pole_v1 = 200  # TODO: Integrate into run
 
 # Increase batch-size
 inc_every_episode = 50 # TODO: Remove, put as parameter of train or in model
-batch_size_inc = 10 # TODO: Remove, put as parameter of train or in model
+batch_size_inc = 2 # TODO: Remove, put as parameter of train or in model
 
 
 class DeepQAgent:
     def __init__(self, env, episodes=1000, batch_size=64):
         # hyperparameters
-        self.memory = deque(maxlen=1000)
+        self.memory = deque(maxlen=2000)
         self.env = env
         self.batch_size = batch_size
 
@@ -35,7 +35,7 @@ class DeepQAgent:
         self.epsilon_min = 0.01         # Minimum chance to explore.
         self.epsilon_decay = np.e ** (np.log(self.epsilon_min / self.epsilon) / (episodes * 0.8)) # Exploration decay factor.
         self.learning_rate = 1e-3       # Learning rate.
-        self.learning_rate_decay = 0.00001  # Learning rate decay
+        self.learning_rate_decay = 0.0001  # Learning rate decay
 
         self.action_space = self.env.action_space.n
         self.observation_space = self.env.observation_space.shape[0]
@@ -43,11 +43,11 @@ class DeepQAgent:
 
     def build_model(self):
         model = Sequential()
-        model.add(Dense(32, input_dim=self.observation_space, activation='relu'))
-        model.add(Dense(24, activation='relu'))
+        model.add(Dense(24, input_dim=self.observation_space))
+        model.add(Dense(16, activation="relu"))
         model.add(Dense(self.action_space, activation='linear'))
         # TODO: Find the perfect decay value
-        model.compile(optimizer=Adam(lr=self.learning_rate, decay=self.learning_rate_decay), loss='mse')
+        model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
         return model
 
     def save_state(self, state, action, reward, done, next_state):
