@@ -21,10 +21,11 @@ batch_size_inc = 10 # TODO: Remove, put as parameter of train or in model
 
 
 class DeepQAgent:
-    def __init__(self, env, episodes=1000):
+    def __init__(self, env, episodes=1000, batch_size=64):
         # hyperparameters
         self.memory = deque(maxlen=1000)
         self.env = env
+        self.batch_size = batch_size
 
         self.episodes = episodes
         self.discount_factor = 0.8      # Increases as episodes go on to weight later actions less.
@@ -75,18 +76,18 @@ class DeepQAgent:
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])
 
-    def train(self, batch_size, episode):
+    def train(self, episode):
         """
         Trains the model by picking a random batch of earlier experiences from memory
         :param batch_size: positive integer the amount of memories to train on, taken from memory.
         :param episode: positive integer the current episode
         """
-        if len(self.memory) < batch_size:
-            batch_size = len(self.memory)
+        if len(self.memory) < self.batch_size:
+            self.batch_size = len(self.memory)
         if episode != 0 and episode % inc_every_episode == 0:
-            batch_size += batch_size_inc
+            self.batch_size += batch_size_inc
 
-        minibatch = random.sample(self.memory, batch_size)
+        minibatch = random.sample(self.memory, self.batch_size)
         for state, action, reward, done, next_state in minibatch:
             target = reward
             if not done:
@@ -136,6 +137,6 @@ class DeepQAgent:
                     else:
                         print(f'Run {run}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}')
                     break
-            self.train(batch_size, e) if explore else None
+            self.train(e) if explore else None
 
         return scores, rolling_average

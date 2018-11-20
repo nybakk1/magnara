@@ -5,12 +5,12 @@ from Plot import plot
 import gym
 
 episodes = 2000
+batch_size = 64
 
-dqn = DeepQAgent(gym.make("CartPole-v1"), episodes)
+dqn = DeepQAgent(gym.make("CartPole-v1"), episodes, batch_size)
 q_model = Qmodel(gym.make("CartPole-v1"))
 
 timesteps = 500
-batch_size = 32
 average_size = 100
 explore = True
 
