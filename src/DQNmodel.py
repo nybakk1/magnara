@@ -17,7 +17,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 class DeepQAgent:
     def __init__(self, env, episodes=1000, batch_size=64):
         # hyperparameters
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=1000)
         self.env = env
         self.batch_size = batch_size
 
@@ -63,7 +63,6 @@ class DeepQAgent:
         # TODO: Random Action Probability (Read: RAP)
         if explore and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
-
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])
 
