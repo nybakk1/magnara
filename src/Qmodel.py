@@ -3,9 +3,6 @@ import math
 import random
 import time
 
-render = False
-when_should_the_code_render_the_cart_pole_v1 = 200
-
 
 class Qmodel:
     def __init__(self, env, bucket=(1, 1, 6, 12)):
@@ -102,12 +99,10 @@ class Qmodel:
         for e in range(episodes):
             state = self.bucketize(self.env.reset())            # Make state discrete.
             for ts in range(timesteps):
-                if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
-                    self.env.render()
-                action = self.policy(state, train)                     # Figure out what action to do.
-                next_state, reward, done, _ = self.env.step(action)  # Do the action.
-                reward = reward if not done else (-timesteps/2)     # Punish for losing.
-                next_state = self.bucketize(next_state)         # Make next_state discrete.
+                action = self.policy(state, train)                      # Figure out what action to do.
+                next_state, reward, done, _ = self.env.step(action)     # Do the action.
+                reward = reward if not done else (-timesteps/2)         # Punish for losing.
+                next_state = self.bucketize(next_state)                 # Make next_state discrete.
 
                 self.update_q(state, next_state, action, reward) if train else None     # Update Q-table.
 
