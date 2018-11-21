@@ -117,9 +117,11 @@ class Qmodel:
                         average = np.average(scores[e-average_size:e])
                         print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {ts}\taverage: {average}')
                         rolling_average.append(average)
-                        if average == float(timesteps-1) and not found_solved:
+                        if average == float(timesteps - 1) and not found_solved:
                             episode_solved = e - 99
                             found_solved = True
+                    else:
+                        print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {ts}')
                     break
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay

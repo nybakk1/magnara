@@ -103,6 +103,8 @@ class DeepQAgent:
         """
         scores = deque(maxlen=100)             # Save scores to calculate average scores.
         rolling_average = []    # Save average score for plotting.
+        episode_solved = -1
+        found_solved = False
         for e in range(self.episodes):
             state = self.env.reset()
             # state = self.normalize(state)
@@ -125,9 +127,13 @@ class DeepQAgent:
                         average = np.mean(scores)
                         print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}\taverage: {average}')
                         rolling_average.append(average)
+                        if average == float(timesteps - 1) and not found_solved:
+                            episode_solved = e - 99
+                            found_solved = True
                     else:
                         print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}')
                     break
             self.train() if train else None
 
+        print(f"Problem solved after {episode_solved} episodes")
         return scores, rolling_average
