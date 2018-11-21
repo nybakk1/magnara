@@ -36,6 +36,7 @@ apt-get install python3-pip
 pip3 install gym
 pip3 install tensorflow
 pip3 install keras
+pip3 install numpy
 ```
 
 #### Arch Linux based distribution
@@ -47,6 +48,7 @@ pacman -S python-pip
 pip install gym
 pip install tensorflow
 pip install keras
+pip install numpy
 ```
 
 ### mac OSX
