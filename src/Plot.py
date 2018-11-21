@@ -6,7 +6,7 @@ def plot(data, legend, yMax, title="", labels=("", "")):
     for i in range(len(data)):
         ax = fig.add_subplot(111)
         if i < len(legend):
-            ax.plot(data[i][0], data[i][1], label=legend[i])
+            ax.plot(data[i][0], data[i][1], label=legend[i], alpha=0.7)
             ax.legend()
         else:
             ax.plot(data[i][0], data[i][1])
