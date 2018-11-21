@@ -5,6 +5,7 @@ from collections import deque
 
 import numpy as np
 import random
+import time
 
 # Force TensorFlow to run on CPU. Comment out these lines
 # if you don't use TensorFlow-GPU
@@ -110,8 +111,8 @@ class DeepQAgent:
         :param explore: boolean wheter the model should explore with random actions
         :param run: positive integer a number indicated which run this is
         """
-        scores = deque(maxlen=100)             # Save scores to calculate average scores.
-        rolling_average = []    # Save average score for plotting.
+        current_time = int(time.time()) # Get current time to return duration of the run.
+        scores = []                     # Save scores for printing, plotting and calculating average.
         for e in range(self.episodes):
             state = self.env.reset()
             # state = self.normalize(state)
@@ -130,8 +131,7 @@ class DeepQAgent:
                 if done or ts >= timesteps - 1:
                     scores.append(ts)
                     if e > average_size:
-                        # average = np.average(scores[e-average_size:e])
-                        average = np.mean(scores)
+                        average = np.average(scores[e-average_size:e])
                         print(f'Run {run}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}\taverage: {average}')
                         rolling_average.append(average)
                     else:
@@ -139,4 +139,5 @@ class DeepQAgent:
                     break
             self.train(e) if explore else None
 
-        return scores, rolling_average
+        duration = int(time.time()) - current_time
+        return scores, duration

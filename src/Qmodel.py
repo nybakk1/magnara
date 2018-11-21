@@ -1,9 +1,7 @@
 import numpy as np
 import math
 import random
-
-render = False
-when_should_the_code_render_the_cart_pole_v1 = 200
+import time
 
 
 class Qmodel:
@@ -94,14 +92,10 @@ class Qmodel:
         :param average_size: positive integer how many previous episodes the rolling average should use.
         """
         scores = []             # Save scores to calculate average scores.
-        rolling_average = []    # Save average score for plotting.
-        episode_solved = -1
-        found_solved = False
+        start_time = int(time.time())
         for e in range(episodes):
             state = self.bucketize(self.env.reset())            # Make state discrete.
             for ts in range(timesteps):
-                if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
-                    self.env.render()
                 action = self.policy(state, explore)                     # Figure out what action to do.
                 next_state, reward, done, _ = self.env.step(action)  # Do the action.
                 reward = reward if not done else (-timesteps/2)     # Punish for losing.
@@ -115,15 +109,11 @@ class Qmodel:
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
                         print(f'Episode {e + 1}/{episodes}\tscore: {ts}\taverage: {average}')
-                        rolling_average.append(average)
-                        if average == float(timesteps-1) and not found_solved:
-                            episode_solved = e - 99
-                            found_solved = True
                     break
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
 
             self.discount_factor = min(self.discount_factor + self.discount_fact_inc, self.discount_fact_max)
 
-        print(f"Problem solved after {episode_solved} episodes")
-        return scores, rolling_average
+        duration = int(time.time()) - start_time
+        return scores, duration
