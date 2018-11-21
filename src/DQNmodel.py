@@ -96,7 +96,7 @@ class DeepQAgent:
         :param average_size: positive integer the amount of previous episodes
         :param train: boolean wheter the model should explore and train
         """
-        scores = []             # Save scores to calculate average scores.
+        scores = []                     # Save scores to calculate average scores.
         episode_solved = -1
         found_solved = False
         start_time = int(time.time())   # Get current time to return duration of the run.
@@ -124,6 +124,6 @@ class DeepQAgent:
                     break
             self.train() if train else None
 
-        print(f"Problem solved after {episode_solved} episodes")
         duration = int(time.time()) - start_time
+        print(f"Problem solved after {episode_solved} episodes")
         return scores, duration
