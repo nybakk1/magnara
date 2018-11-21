@@ -4,7 +4,7 @@ from Plot import plot
 
 import gym
 
-episodes = 2000
+episodes = 1000
 batch_size = 64
 timesteps = 500
 average_size = 100
@@ -14,9 +14,11 @@ dqn = DeepQAgent(env, episodes, batch_size)
 q_model = Qmodel(env)
 
 dqn_run = dqn.run("DQN-Train", timesteps, average_size, True)
+dqn.setEpisodes(200)
 dqn_run2 = dqn.run("DQN-Test", timesteps, average_size, False)
+
 q_run = q_model.run("Q-Train", True, episodes, timesteps, average_size)
-q_run2 = q_model.run("Q-Test", False, episodes, timesteps, average_size)
+q_run2 = q_model.run("Q-Test", False, 200, timesteps, average_size)
 
 print(f"Duration: {dqn_run[1]} seconds\n"
       f"Scores: {dqn_run[0]}")
