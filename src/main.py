@@ -6,17 +6,17 @@ import gym
 
 episodes = 2000
 batch_size = 64
-timesteps = 500
+max_score = 500
 average_size = 100
 
 env = gym.make("CartPole-v1")
 dqn = DeepQAgent(env, episodes, batch_size)
 q_model = Qmodel(env)
 
-dqn_run = dqn.run("DQN-Train", timesteps, average_size, True)
-dqn_run2 = dqn.run("DQN-Test", timesteps, average_size, False)
-q_run = q_model.run("Q-Train", True, episodes, timesteps, average_size)
-q_run2 = q_model.run("Q-Test", False, episodes, timesteps, average_size)
+dqn_run = dqn.run("DQN-Train", max_score, average_size, True)
+dqn_run2 = dqn.run("DQN-Test", max_score, average_size, False)
+q_run = q_model.run("Q-Train", True, episodes, max_score, average_size)
+q_run2 = q_model.run("Q-Test", False, episodes, max_score, average_size)
 
 print(f"Duration: {dqn_run[1]} seconds\n"
       f"Scores: {dqn_run[0]}")
