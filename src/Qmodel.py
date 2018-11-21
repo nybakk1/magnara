@@ -5,10 +5,11 @@ import time
 
 
 class Qmodel:
-    def __init__(self, env, bucket=(1, 1, 6, 12)):
+    def __init__(self, env, episodes, bucket=(1, 1, 6, 12)):
         self.env = env
         self.action_size = env.action_space.n
         self.observation_size = env.observation_space.shape[0]
+        self.episodes = episodes
 
         self.bucket = bucket
         self.Q = self.build_q()
@@ -18,7 +19,7 @@ class Qmodel:
         self.discount_fact_max = 1.0    # Maximum limit for discount factor.
         self.epsilon = 1.0              # Chance to explore.
         self.epsilon_min = 0.01         # Minimum chance to explore.
-        self.epsilon_decay = 0.995      # Exploration decay factor.
+        self.epsilon_decay = np.e ** (np.log(self.epsilon_min / self.epsilon) / (episodes * 0.8))  # Exploration decay factor.
         self.learning_rate = 0.1        # Learning rate.
 
     def bucketize(self, state):
@@ -82,7 +83,7 @@ class Qmodel:
         next_state = self.hash(next_state)
         self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
 
-    def run(self, run_name, train=True, episodes=500, max_score=200, average_size=100):
+    def run(self, run_name, train=True, max_score=200, average_size=100):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
@@ -96,7 +97,7 @@ class Qmodel:
         episode_solved = -1
         found_solved = False
         start_time = int(time.time())
-        for e in range(episodes):
+        for e in range(self.episodes):
             state = self.bucketize(self.env.reset())            # Make state discrete.
             for timestep in range(max_score):
                 action = self.policy(state, train)                      # Figure out what action to do.
@@ -112,12 +113,12 @@ class Qmodel:
                     scores.append(score)
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
-                        print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {score}\taverage: {average}')
+                        print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {score}\taverage: {average}')
                         if average == float(max_score - 1) and not found_solved:
                             episode_solved = e - average_size - 1
                             found_solved = True
                     else:
-                        print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {score}')
+                        print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {score}')
                     break
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
