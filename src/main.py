@@ -4,21 +4,19 @@ from Plot import plot
 
 import gym
 
-episodes = 1000
+episodes = 1500
 batch_size = 64
+timesteps = 500
+average_size = 100
 
 env = gym.make("CartPole-v1")
 dqn = DeepQAgent(env, episodes, batch_size)
 q_model = Qmodel(env)
 
-timesteps = 500
-average_size = 100
-
-
-dqn_run = dqn.run(timesteps, batch_size, average_size, True, 1)
-dqn_run2 = dqn.run(timesteps, batch_size, average_size, False, 2)
-q_run = q_model.run(True, episodes, timesteps, average_size)
-q_run2 = q_model.run(False, episodes, timesteps, average_size)
+dqn_run = dqn.run("DQN-Train", timesteps, average_size, True)
+dqn_run2 = dqn.run("DQN-Test", timesteps, average_size, False)
+q_run = q_model.run("Q-Train", True, episodes, timesteps, average_size)
+q_run2 = q_model.run("Q-Test", False, episodes, timesteps, average_size)
 
 plot(data=[([i + average_size for i in range(len(dqn_run[1]))], dqn_run[1]),
            ([i + average_size for i in range(len(q_run[1]))], q_run[1])],

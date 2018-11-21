@@ -84,11 +84,12 @@ class Qmodel:
         next_state = self.hash(next_state)
         self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
 
-    def run(self, explore=True, episodes=500, timesteps=200, average_size=100):
+    def run(self, run_name, train=True, episodes=500, timesteps=200, average_size=100):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
-        :param explore: boolean whether the model should do exploring or not.
+        :param run_name: String for naming the run
+        :param train: boolean whether the model should do exploring and train.
         :param episodes: positive integer how many episodes the model should train on.
         :param timesteps: positive integer how long the model will try to keep the pole up.
         :param average_size: positive integer how many previous episodes the rolling average should use.
@@ -102,19 +103,19 @@ class Qmodel:
             for ts in range(timesteps):
                 if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
                     self.env.render()
-                action = self.policy(state, explore)                     # Figure out what action to do.
+                action = self.policy(state, train)                     # Figure out what action to do.
                 next_state, reward, done, _ = self.env.step(action)  # Do the action.
                 reward = reward if not done else (-timesteps/2)     # Punish for losing.
                 next_state = self.bucketize(next_state)         # Make next_state discrete.
 
-                self.update_q(state, next_state, action, reward) if explore else None     # Update Q-table.
+                self.update_q(state, next_state, action, reward) if train else None     # Update Q-table.
 
                 state = next_state
                 if done or ts >= timesteps -1:
                     scores.append(ts)
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
-                        print(f'Episode {e + 1}/{episodes}\tscore: {ts}\taverage: {average}')
+                        print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {ts}\taverage: {average}')
                         rolling_average.append(average)
                         if average == float(timesteps-1) and not found_solved:
                             episode_solved = e - 99
