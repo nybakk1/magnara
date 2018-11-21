@@ -53,6 +53,9 @@ class DeepQAgent:
         """
         self.memory.append((state, action, reward, done, next_state))
 
+    def setEpisodes(self, episodes):
+        self.episodes = episodes
+
     def policy(self, state, explore=True):
         """
         Policy function to figure out what action to take.
