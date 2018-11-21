@@ -83,11 +83,10 @@ class DeepQAgent:
         :param episode: positive integer the current episode
         """
         if len(self.memory) < self.batch_size:
-            self.batch_size = len(self.memory)
-        if episode != 0 and episode % inc_every_episode == 0:
-            self.batch_size += batch_size_inc
+            minibatch = random.sample(self.memory, len(self.memory))
+        else:
+            minibatch = random.sample(self.memory, self.batch_size)
 
-        minibatch = random.sample(self.memory, self.batch_size)
         for state, action, reward, done, next_state in minibatch:
             target = reward
             if not done:
@@ -121,7 +120,7 @@ class DeepQAgent:
                     self.env.render()
                 action = self.policy(state, explore)
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
-                reward = reward if not done else -timesteps / 2             # Punish for losing.
+                reward = reward if not done else -100             # Punish for losing.
                 # next_state = self.normalize(next_state)
                 next_state = np.reshape(next_state, [1, self.observation_space])
                 self.save_state(state, action, reward, done, next_state) if explore else None

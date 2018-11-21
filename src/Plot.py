@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-def plot(data, legend, title="", labels=("", "")):
+def plot(data, legend, yMax, title="", labels=("", "")):
     fig = plt.figure()
     for i in range(len(data)):
         ax = fig.add_subplot(111)
@@ -13,4 +13,5 @@ def plot(data, legend, title="", labels=("", "")):
     plt.title(title)
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
+    plt.ylim(0, yMax+10)
     plt.show()
