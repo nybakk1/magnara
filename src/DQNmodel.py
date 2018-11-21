@@ -13,9 +13,6 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-render = False      # TODO: Integrate into run
-when_should_the_code_render_the_cart_pole_v1 = 200  # TODO: Integrate into run
-
 
 class DeepQAgent:
     def __init__(self, env, episodes=1000, batch_size=64):
@@ -60,7 +57,7 @@ class DeepQAgent:
         """
         Policy function to figure out what action to take.
 
-        :param state:
+        :param state: the state to consider
         :return: an action
         """
         # TODO: Random Action Probability (Read: RAP)
@@ -100,21 +97,16 @@ class DeepQAgent:
         :param train: boolean wheter the model should explore and train
         """
         scores = []             # Save scores to calculate average scores.
-        rolling_average = []    # Save average score for plotting.
         episode_solved = -1
         found_solved = False
         start_time = int(time.time())   # Get current time to return duration of the run.
         for e in range(self.episodes):
             state = self.env.reset()
-            # state = self.normalize(state)
             state = np.reshape(state, [1, self.observation_space])
             for ts in range(timesteps):
-                if e % when_should_the_code_render_the_cart_pole_v1 is 0 and render is True:
-                    self.env.render()
-                action = self.policy(state, train)
+                action = self.policy(state, train)                      # Find action.
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
-                reward = reward if not done else -100             # Punish for losing.
-                # next_state = self.normalize(next_state)
+                reward = reward if not done else -100                   # Punish for losing.
                 next_state = np.reshape(next_state, [1, self.observation_space])
                 self.save_state(state, action, reward, done, next_state) if train else None
 
@@ -124,7 +116,6 @@ class DeepQAgent:
                     if e > average_size:
                         average = np.average(scores[e - average_size:e])
                         print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}\taverage: {average}')
-                        rolling_average.append(average)
                         if average == float(timesteps - 1) and not found_solved:
                             episode_solved = e - average_size - 1
                             found_solved = True
