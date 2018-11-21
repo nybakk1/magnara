@@ -85,13 +85,13 @@ class DeepQAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-    def run(self, run_name, timesteps=500, average_size=100, train=True):
+    def run(self, run_name, max_score=500, average_size=100, train=True):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
 
         :param run_name: String for naming the run
-        :param timesteps: positive integer the time to keep the pole upright
+        :param max_score: positive integer the time to keep the pole upright
         :param average_size: positive integer the amount of previous episodes
         :param train: boolean wheter the model should explore and train
         """
@@ -102,7 +102,7 @@ class DeepQAgent:
         for e in range(self.episodes):
             state = self.env.reset()
             state = np.reshape(state, [1, self.observation_space])
-            for ts in range(timesteps):
+            for timestep in range(max_score):
                 action = self.policy(state, train)                      # Find action.
                 next_state, reward, done, _ = self.env.step(action)     # Do the action
                 reward = reward if not done else -100                   # Punish for losing.
@@ -110,16 +110,17 @@ class DeepQAgent:
                 self.save_state(state, action, reward, done, next_state) if train else None
 
                 state = next_state
-                if done or ts >= timesteps - 1:
-                    scores.append(ts)
+                if done or timestep >= max_score - 1:
+                    score = timestep + 1
+                    scores.append(score)
                     if e > average_size:
                         average = np.average(scores[e - average_size:e])
-                        print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}\taverage: {average}')
-                        if average == float(timesteps - 1) and not found_solved:
+                        print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {score}\taverage: {average}')
+                        if average == float(max_score - 1) and not found_solved:
                             episode_solved = e - average_size - 1
                             found_solved = True
                     else:
-                        print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {ts}')
+                        print(f'Run: {run_name}\tEpisode {e + 1}/{self.episodes}\tscore: {score}')
                     break
             self.train() if train else None
 
