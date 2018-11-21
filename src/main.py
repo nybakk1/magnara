@@ -14,7 +14,7 @@ dqn = DeepQAgent(env, episodes, batch_size)
 q_model = Qmodel(env)
 
 dqn_run = dqn.run("DQN-Train", timesteps, average_size, True)
-dqn.setEpisodes(200)
+dqn.episodes = 200
 dqn_run2 = dqn.run("DQN-Test", timesteps, average_size, False)
 
 q_run = q_model.run("Q-Train", True, episodes, timesteps, average_size)
