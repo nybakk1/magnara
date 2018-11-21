@@ -113,8 +113,8 @@ class Qmodel:
                     if e > average_size:
                         average = np.average(scores[e-average_size:e])
                         print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {score}\taverage: {average}')
-                        if average == float(max_score - 1) and not found_solved:
-                            episode_solved = e - average_size - 1
+                        if average >= max_score * 0.95 and not found_solved:
+                            episode_solved = e - 99
                             found_solved = True
                     else:
                         print(f'Run: {run_name}\tEpisode {e + 1}/{episodes}\tscore: {score}')
