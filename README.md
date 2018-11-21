@@ -54,6 +54,7 @@ pip install keras
 pip3 install gym
 pip3 install tensorflow
 pip3 install keras
+pip3 install numpy
 ```
 
 ## Authors
