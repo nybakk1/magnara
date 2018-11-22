@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Prerequisites
 
-In order to successfully compile and run the code, [Python 3.x](https://www.python.org), [Gym](https://gym.openai.com/) should be installed. 
+In order to successfully compile and run the code, [Python 3.6+](https://www.python.org), [Gym](https://gym.openai.com/), [TensorFlow](https://www.tensorflow.org/) and [Keras](https://keras.io/)  should be installed. 
 
 
 ## Installing dependencies
@@ -20,9 +20,7 @@ In order to successfully compile and run the code, [Python 3.x](https://www.pyth
 [TODO]: # (TODO: See if this is even possible without Visual Studio)
 
 **Instructions for how to successfully set up a working environment in Windows will be provided if there's a feasible 
-solution outside of Visual Studio and Visual Studio Build Tools.  
-It is highly recommended to this on Linux or macOS**
-
+solution outside of Visual Studio and Visual Studio Build Tools. It is highly recommended to run this on Linux or macOS**
 
 ### Linux
 
