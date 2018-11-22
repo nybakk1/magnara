@@ -28,17 +28,3 @@ print(f"Duration: {q_run[1]} seconds\n"
       f"Scores: {q_run[0]}")
 print(f"Duration: {q_run2[1]} seconds\n"
       f"Scores: {q_run2[0]}")
-
-# plot(data=[([i + average_size for i in range(len(dqn_run[1]))], dqn_run[1]),
-#            ([i + average_size for i in range(len(q_run[1]))], q_run[1])],
-#      legend=["DQN-Agent", "Q-learning"],
-#      yMax=timesteps,
-#      title=f"Rolling average of past {average_size} episodes.",
-#      labels=("Episode", "Average score"))
-#
-# plot(data=[([i + average_size for i in range(len(dqn_run2[1]))], dqn_run2[1]),
-#            ([i + average_size for i in range(len(q_run2[1]))], q_run2[1])],
-#      legend=["DQN-Agent", "Q-learning"],
-#      yMax=timesteps,
-#      title=f"Rolling average of past {average_size} episodes.",
-#      labels=("Episode", "Average score"))
