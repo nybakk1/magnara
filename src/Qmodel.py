@@ -5,7 +5,7 @@ import time
 
 
 class Qmodel:
-    def __init__(self, env, episodes, bucket=(1, 1, 6, 12)):
+    def __init__(self, env, episodes=1500, bucket=(1, 1, 6, 12)):
         self.env = env
         self.action_size = env.action_space.n
         self.observation_size = env.observation_space.shape[0]
@@ -83,15 +83,14 @@ class Qmodel:
         next_state = self.hash(next_state)
         self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
 
-    def run(self, run_name, train=True, max_score=200, average_size=100):
+    def run(self, run_name, max_score=500, average_size=100, train=True):
         """
         Run model, OpenAI gym simulates an environment and the agent starts to learn.
         The rolling average of the scores is plotted at the end.
         :param run_name: String for naming the run
-        :param train: boolean whether the model should do exploring and train.
-        :param episodes: positive integer how many episodes the model should train on.
         :param max_score: positive integer how long the model will try to keep the pole up.
         :param average_size: positive integer how many previous episodes the rolling average should use.
+        :param train: boolean whether the model should do exploring and train.
         """
         scores = []             # Save scores to calculate average scores.
         episode_solved = -1

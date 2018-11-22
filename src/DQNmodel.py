@@ -15,7 +15,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 class DeepQAgent:
-    def __init__(self, env, episodes=1000, batch_size=64):
+    def __init__(self, env, episodes=1500, batch_size=64):
         # hyperparameters
         self.memory = deque(maxlen=1000)
         self.env = env

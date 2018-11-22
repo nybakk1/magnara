@@ -17,10 +17,9 @@ dqn_run = dqn.run("DQN-Train", max_score, average_size, True)
 dqn.episodes = 200
 dqn_run2 = dqn.run("DQN-Test", max_score, average_size, False)
 
-q_run = q_model.run("Q-Train", True, max_score, average_size)
+q_run = q_model.run("Q-Train", max_score, average_size, True)
 q_model.episodes = 200
-q_run2 = q_model.run("Q-Test", False, max_score, average_size)
-
+q_run2 = q_model.run("Q-Test", max_score, average_size, False)
 print(f"Duration: {dqn_run[1]} seconds\n"
       f"Scores: {dqn_run[0]}")
 print(f"Duration: {dqn_run2[1]} seconds\n"
