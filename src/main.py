@@ -1,6 +1,5 @@
 from src.DQNmodel import *
 from src.Qmodel import *
-from src.Plot import plot
 
 import gym
 

@@ -81,7 +81,8 @@ class Qmodel:
         """
         state = self.hash(state)
         next_state = self.hash(next_state)
-        self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (reward + self.discount_factor * np.max(self.Q[next_state]))
+        self.Q[state][action] = (1 - self.learning_rate) * self.Q[state][action] + self.learning_rate * (
+                reward + self.discount_factor * np.max(self.Q[next_state]))
 
     def run(self, run_name, max_score=500, average_size=100, train=True):
         """

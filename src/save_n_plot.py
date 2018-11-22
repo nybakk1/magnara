@@ -1,5 +1,6 @@
 from src.DQNmodel import *
 from src.Qmodel import *
+from matplotlib.lines import Line2D
 
 import gym
 import json
@@ -58,17 +59,18 @@ def plot_json(file_name, title="Plot"):
         avg_duration += np.array(data[p]['duration'])
 
     vector = vector / len(data)
-    # avg_duration = avg_duration / len(data)
     X = np.linspace(0, len(data['Run 0']['scores']), len(data['Run 0']['scores']), dtype=int)
 
     p1 = np.polyfit(X, vector, 4)
 
-    plt.plot(vector, 'g', alpha=0.2)
-    plt.plot(X, np.polyval(p1, X), 'r', label='Average score/episode')
+    plot1, = plt.plot(X, np.polyval(p1, X), 'r', label='Tilnærming av gj.snitt')
+    plot2 = Line2D([0], [0], marker='o', color='#6cb4e6', label='Score/episode',
+                   linestyle='', markersize=2)
     for p in data:
         plt.scatter(X, data[p]['scores'], s=2, alpha=0.2, c='#6cb4e6')
+    plot3 = plt.scatter(X, vector, c='g', s=4, alpha=0.4, label='Gj.snittlig score/episode')
     plt.title(f'{title} ({len(data)} runs)')
-    plt.legend()
+    plt.legend(handles=[plot1, plot2, plot3])
     plt.ylabel('Score')
     plt.xlim(0)
     plt.ylim(0)
@@ -77,8 +79,8 @@ def plot_json(file_name, title="Plot"):
 
 
 save_json("dqn", "dqn", 25)
-save_json("q", "q", 5)
-plot_json('train-q', 'Q-learning')
-plot_json('test-q', 'Q-learning')
+save_json("q", "q", 25)
 plot_json('train-dqn', 'Deep Q Network')
 plot_json('test-dqn', 'Deep Q Network')
+plot_json('train-q', 'Q-learning')
+plot_json('test-q', 'Q-learning')

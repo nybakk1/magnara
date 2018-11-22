@@ -37,7 +37,6 @@ class DeepQAgent:
         model.add(Dense(24, input_dim=self.observation_space))
         model.add(Dense(16, activation="relu"))
         model.add(Dense(self.action_space, activation='linear'))
-        # TODO: Find the perfect decay value
         model.compile(optimizer=Adam(lr=self.learning_rate), loss='mse')
         return model
 
@@ -60,7 +59,6 @@ class DeepQAgent:
         :param state: the state to consider
         :return: an action
         """
-        # TODO: Random Action Probability (Read: RAP)
         if explore and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
         act_values = self.model.predict(state)

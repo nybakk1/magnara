@@ -10,8 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Prerequisites
 
-In order to successfully compile and run the code, [Python 3.x](https://www.python.org), [Gym](https://gym.openai.com/) and 
-[box2d-py](https://pypi.org/project/box2d-py/) should be installed. 
+In order to successfully compile and run the code, [Python 3.x](https://www.python.org), [Gym](https://gym.openai.com/) should be installed. 
 
 
 ## Installing dependencies
@@ -22,7 +21,7 @@ In order to successfully compile and run the code, [Python 3.x](https://www.pyth
 
 **Instructions for how to successfully set up a working environment in Windows will be provided if there's a feasible 
 solution outside of Visual Studio and Visual Studio Build Tools.  
-It is highly recommended to install this on Linux or macOS**
+It is highly recommended to this on Linux or macOS**
 
 
 ### Linux
